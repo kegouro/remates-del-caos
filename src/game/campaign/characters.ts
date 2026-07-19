@@ -79,7 +79,7 @@ export const CORE_CHARACTERS: Record<CharacterId, CharacterProfile> = {
   }),
   fiscal: profile({
     id: 'fiscal', name: 'Fiscal Serafina Timbre', fullName: 'Serafina Elvira Timbre y Contratimbre',
-    title: 'Inspectora General de Bienes Improbables', sigil: 'ST',
+    title: 'Inspectora General de Bienes Improbables', image: './characters/fiscal.webp', sigil: 'ST',
     publicDescription: 'Una mirada suya convierte decoración en evidencia y excusas en anexos numerados.',
     personality: ['metódica', 'teóricamente incorruptible', 'seca', 'fascinada por inconsistencias'],
     speech: 'Frases cortas, numeración y reglamentos inexistentes. Nunca necesita insultar directamente.',
@@ -127,7 +127,7 @@ export const CORE_CHARACTERS: Record<CharacterId, CharacterProfile> = {
   }),
   notario: profile({
     id: 'notario', name: 'El Notario Sin Rostro', fullName: 'No consta en copia autorizada',
-    title: 'Ministro de Fe, Duda y Fotocopias', sigil: 'NS',
+    title: 'Ministro de Fe, Duda y Fotocopias', image: './characters/notario.webp', sigil: 'NS',
     publicDescription: 'Valida lo imposible siempre que venga en triplicado y con margen izquierdo suficiente.',
     personality: ['calculador', 'literal', 'inexpresivo', 'procesalmente vengativo'],
     speech: 'Cláusulas, incisos y silencios que cuentan como consentimiento.',
@@ -151,7 +151,7 @@ export const CORE_CHARACTERS: Record<CharacterId, CharacterProfile> = {
   }),
   filomena: profile({
     id: 'filomena', name: 'Doña Filomena Liquidez', fullName: 'Filomena Cascada de Liquidez y Sobregiro',
-    title: 'Heredera de una Cascada Embargada', sigil: 'FL',
+    title: 'Heredera de una Cascada Embargada', image: './characters/filomena.webp', sigil: 'FL',
     publicDescription: 'Puede convertir patrimonio familiar en una puja impulsiva antes de terminar la frase.',
     personality: ['carismática', 'impulsiva', 'competitiva', 'generosa con dinero ajeno'],
     speech: 'Promesas veloces, risas caras y cifras pronunciadas como retos personales.',
@@ -211,7 +211,7 @@ export const CORE_CHARACTERS: Record<CharacterId, CharacterProfile> = {
   }),
   cobradora: profile({
     id: 'cobradora', name: 'La Cobradora de las 4:17', fullName: 'No consta. Solo figura la hora.',
-    title: 'Gestora de Obligaciones que Todavía No Vencen', sigil: '4:17',
+    title: 'Gestora de Obligaciones que Todavía No Vencen', image: './characters/cobradora.webp', sigil: '4:17',
     publicDescription: 'Sus zapatos se oyen antes de que exista el pasillo por donde llegará.',
     personality: ['implacable', 'educada', 'literal', 'cansada de futuros repetidos'],
     speech: 'Preguntas simples, cifras exactas y silencios demasiado largos.',

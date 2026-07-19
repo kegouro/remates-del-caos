@@ -31,6 +31,7 @@ export const App: React.FC = () => {
   const [state, dispatch] = useReducer(gameReducer, createInitialState());
   const [showAchievements, setShowAchievements] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
+  const [helpTab, setHelpTab] = useState<'concepts' | 'modes' | 'loop'>('concepts');
   const [showDossier, setShowDossier] = useState(false);
   const [showStoryLedger, setShowStoryLedger] = useState(false);
   const [showRitualArchive, setShowRitualArchive] = useState(false);
@@ -829,22 +830,55 @@ export const App: React.FC = () => {
       </div>
 
       {showHelp && (
-        <div className="help-box" style={{ border: '1px solid var(--color-gold)', padding: '15px', marginBottom: '20px', background: 'rgba(10,10,10,0.95)' }}>
-          <h3 style={{ color: 'var(--color-gold)', fontFamily: 'var(--font-gothic)' }}>Reglas de Mortaja, Martillo & Cía.</h3>
-          <p style={{ fontSize: '0.85rem', lineHeight: '1.5' }}>
-            1. Puja en tiempo real contra rivales con presupuestos, obsesiones, tics y rencores persistentes.<br />
-            2. El formato puede cobrar liquidez, compostura o prestigio. Lee el reglamento temporal antes de incendiar recursos equivocados.<br />
-            3. Influencia permite filtrar tasaciones y sabotear rivales; los fragmentos de alma reescriben aperturas y otras ilegalidades metafísicas.<br />
-            4. La casa acumula hambre. Cuando se irrita ofrece contratos: puedes alimentarla, arrendar tu nombre o hipotecar aplausos futuros.<br />
-            5. Los presagios funcionan como desafíos de campaña. Cumplirlos altera el expediente y entrega recompensas únicas.<br />
-            6. Confesiones y evidencia voluntaria se procesan localmente y alimentan lotes, roasts y callbacks. Puedes borrarlas desde Mi Expediente.<br />
-            7. Deuda superior a $5.000 bloquea la puja. Don Sanguino presta; Sir Roquefort compra almas; ninguno entrega orientación financiera responsable.<br />
-            8. Los rituales secretos nacen de combinaciones improbables: sillas, rechazos, coronas, deudas palindrómicas y archivos definitivamente finales.<br />
-            9. El Libro de Actas conserva los accidentes importantes. En Remate Interminable la institución continúa hasta que tú o la realidad renuncien.
-          </p>
-          <button className="btn-gothic-sm" style={{ marginTop: '10px' }} onClick={() => setShowHelp(false)}>
-            Entendido
-          </button>
+        <div className="help-box" style={{ border: '1px solid var(--color-gold)', padding: '20px', marginBottom: '20px', background: '#0e0d0a', borderRadius: '6px', boxShadow: '0 4px 20px rgba(0,0,0,0.9)' }}>
+          <h3 style={{ color: 'var(--color-gold)', fontFamily: 'var(--font-gothic)', textAlign: 'center', marginTop: 0, borderBottom: '1px solid rgba(212,175,55,0.2)', paddingBottom: '10px' }}>
+            ◈ GUÍA Y REGLAMENTO DEL SUBSUELO ◈
+          </h3>
+          
+          <div className="help-tabs" style={{ display: 'flex', gap: '5px', marginBottom: '15px', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '8px' }}>
+            <button className={`btn-gothic-sm ${helpTab === 'concepts' ? 'active' : ''}`} style={{ flex: 1, fontSize: '0.72rem' }} onClick={() => setHelpTab('concepts')}>1. Conceptos y Métricas</button>
+            <button className={`btn-gothic-sm ${helpTab === 'modes' ? 'active' : ''}`} style={{ flex: 1, fontSize: '0.72rem' }} onClick={() => setHelpTab('modes')}>2. Modos de Juego</button>
+            <button className={`btn-gothic-sm ${helpTab === 'loop' ? 'active' : ''}`} style={{ flex: 1, fontSize: '0.72rem' }} onClick={() => setHelpTab('loop')}>3. Mecánica y Áreas</button>
+          </div>
+
+          <div className="help-tab-content" style={{ fontSize: '0.85rem', lineHeight: '1.6', color: 'var(--color-text-primary)' }}>
+            {helpTab === 'concepts' && (
+              <div>
+                <strong style={{ color: 'var(--color-gold)' }}>• Presupuesto (Liquidez):</strong> Tu dinero para pujar. Si se acaba y tienes deudas al finalizar el acto, quebrarás. Evita quedar en $0.<br />
+                <strong style={{ color: 'var(--color-red-bright)' }}>• Deuda Total:</strong> Dinero prestado por Don Sanguino o bancos. Si supera los <span style={{ color: 'var(--color-red-bright)', fontWeight: 'bold' }}>$5.000</span>, el panel de subastas se bloqueará con un pagaré hasta que abones dinero para reducir la deuda por debajo de ese umbral.<br />
+                <strong style={{ color: 'var(--color-gold)' }}>• Prestigio:</strong> Reputación en el salón. Se gana ganando subastas valiosas o resolviendo eventos. Sirve para algunas transacciones avanzadas.<br />
+                <strong style={{ color: 'var(--color-red)' }}>• Maldición (✥):</strong> Aumenta con objetos malditos. Si es muy alta, corrompe la realidad provocando anomalías y distorsiones extremas.<br />
+                <strong style={{ color: 'var(--color-gold)' }}>• Compostura:</strong> Tu salud mental. Puedes liquidarla en contratos con la casa, pero si llega al 0% serás expulsado por histeria.<br />
+                <strong style={{ color: 'var(--color-red-bright)' }}>• Sospecha Fiscal:</strong> Nivel de vigilancia de la Fiscal. Se reduce superando minijuegos de defensa en el Tribunal. Si llega a 100%, serás auditado.
+              </div>
+            )}
+
+            {helpTab === 'modes' && (
+              <div>
+                <strong style={{ color: 'var(--color-gold)' }}>• Remate Breve:</strong> Ideal para aprender las mecánicas del juego de forma rápida (consta de 6 lotes distribuidos en 2 actos, con 2 enfrentamientos de jefes).<br />
+                <strong style={{ color: 'var(--color-gold)' }}>• Noche Completa:</strong> La experiencia de campaña equilibrada estándar (consta de 13 lotes a lo largo de 5 actos, con 5 jefes y fluctuaciones de periódicos).<br />
+                <strong style={{ color: 'var(--color-gold)' }}>• Remate Interminable:</strong> Un modo de resistencia cíclico. Jefes, portadas de prensa y subastas se repiten infinitamente hasta que la realidad o tu saldo colapsen.<br />
+                <strong style={{ color: 'var(--color-gold)' }}>• Remate del Día (Desafío Diario):</strong> Se activa marcando la casilla en el prólogo. Usa una semilla común y modificadores fijos basados en el calendario UTC para comparar tu desempeño diario con otros insolventes de forma offline.
+              </div>
+            )}
+
+            {helpTab === 'loop' && (
+              <div>
+                <strong style={{ color: 'var(--color-gold)' }}>• Subasta en Tiempo Real:</strong> Debes pujar más que tus oponentes. Los rivales tienen tics y rencores; si los presionas mucho, pujarán agresivamente. Puedes usar **Maniobras** (sabotear, filtrar tasaciones) gastando influencia o fragmentos de alma.<br />
+                <strong style={{ color: 'var(--color-gold)' }}>• Confesionario (Chat):</strong> Envía declaraciones escritas a los personajes de la izquierda. Si escribes sobre palabras clave (dinero, deuda, secreto, alma, muerte, jefe), te darán respuestas contextuales para conocer sus debilidades y secretos.<br />
+                <strong style={{ color: 'var(--color-gold)' }}>• Áreas de Navegación:</strong> Usa la barra de puntos de interés:<br />
+                &nbsp;&nbsp;<em>- Taller Clandestino:</em> Fusiona dos objetos para crear reliquias únicas o límpialos de maldición.<br />
+                &nbsp;&nbsp;<em>- Tribunal de Bienes:</em> Resuelve minijuegos (escribir firmas veloces, calcular tasaciones) para anular sospecha fiscal.<br />
+                &nbsp;&nbsp;<em>- Túneles del Sumidero:</em> Visita a Sir Roquefort para ceder tu alma a cambio de extinguir todas tus deudas.
+              </div>
+            )}
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '15px', borderTop: '1px solid rgba(212,175,55,0.1)', paddingTop: '10px' }}>
+            <button className="btn-gothic-sm" onClick={() => setShowHelp(false)}>
+              Entendido
+            </button>
+          </div>
         </div>
       )}
 
