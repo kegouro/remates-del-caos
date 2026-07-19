@@ -1,14 +1,42 @@
 # REMATES DEL CAOS
 
-## Adjudicado al Peor Postor
+### Adjudicado al Peor Postor
+
+[![Deploy GitHub Pages](https://github.com/kegouro/remates-del-caos/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/kegouro/remates-del-caos/actions/workflows/deploy-pages.yml)
+[![Pages Status](https://img.shields.io/badge/Pages-Active-success.svg)](https://kegouro.github.io/remates-del-caos/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![React](https://img.shields.io/badge/React-19-blue.svg)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-6.0-blue.svg)](https://www.typescriptlang.org/)
+
+[🎭 JUGAR AHORA](https://kegouro.github.io/remates-del-caos/)
+
+---
+
+![Banner Social](docs/social-preview.png)
 
 > Tienes diez mil pesos, ningún criterio y una silla reservada en el subsuelo de **Mortaja, Martillo & Cía.**
 
-![Entrada a Mortaja, Martillo & Cía.](docs/screenshots/desktop-main.png)
-
-**Remates del Caos** es un roguelite narrativo de subastas, deudas, objetos malditos y burocracia espectral. Nació como un prototipo en Streamlit y ahora funciona como un juego web estático en React, TypeScript y Vite.
+**Remates del Caos** es un roguelite narrativo de subastas, deudas, objetos malditos y burocracia espectral. Funciona como un juego web estático en React, TypeScript y Vite, ejecutable localmente y sin requerir un servidor de base de datos ni credenciales de IA externas.
 
 No pretende resolver un problema real. Pretende averiguar cuánto pagarías por una tetera que recuerda discusiones y qué diría una rata aristócrata al respecto.
+
+---
+
+## Galería del Salón
+
+| 1. Entrada al Salón | 2. Declaración Jurada |
+| :---: | :---: |
+| ![Entrada al Salón](docs/screenshots/hero.png) | ![Expediente Apócrifo](docs/screenshots/dossier.png) |
+
+| 3. Subasta con Rivales | 4. Anomalías & Trucos |
+| :---: | :---: |
+| ![Subasta en Curso](docs/screenshots/auction.png) | ![Anomalías](docs/screenshots/anomaly.png) |
+
+| 5. Auditoría de Deuda | 6. Prensa Reactiva | 7. Vista Móvil |
+| :---: | :---: | :---: |
+| ![Deudas](docs/screenshots/debt.png) | ![Prensa](docs/screenshots/newspaper.png) | ![Móvil](docs/screenshots/mobile.png) |
+
+---
 
 ## Qué ocurre dentro
 
@@ -31,6 +59,8 @@ No pretende resolver un problema real. Pretende averiguar cuánto pagarías por 
 - **Audio local:** música sintetizada, martillazos, ambientes y voces mediante APIs del navegador.
 - **Semillas reproducibles:** la estructura procedural puede repetirse sin depender de IA ni backend.
 
+---
+
 ## Habitantes del subsuelo
 
 **Don Belisario Martillazo** convierte cada pérdida en ceremonia. Sospecha que él también fue subastado.
@@ -43,57 +73,62 @@ No pretende resolver un problema real. Pretende averiguar cuánto pagarías por 
 
 La Fiscal Serafina Timbre, Maese Engrudo, Madame Balance, la Cobradora de las 4:17 y otras criaturas completan un consejo de dieciséis enemigos potenciales.
 
+---
+
 ## Modos de expediente
 
 - **Incógnito Patrimonial:** inventa todos los datos.
 - **Visita Diplomática:** personalización y roasts suaves.
 - **Contabilidad Nocturna:** experiencia equilibrada.
 - **Fiebre Patrimonial:** más anomalías y callbacks.
-- **Auditoría Sin Abogado:** modo adulto, hostil y deliberadamente personal. Requiere confirmación explícita y permite borrar la munición durante la partida.
+- **Auditoría Sin Abogado:** modo adulto, hostil y deliberadamente personal. Requiere confirmación explícitamente autorizada y permite borrar la munición durante la partida.
 
-## Privacidad
+> [!WARNING]
+> **Advertencia de contenido:** El juego incluye humor negro, lenguaje adulto y un modo opcional de hostilidad personalizada. La intensidad puede configurarse o desactivarse en las opciones del expediente.
 
-La aplicación no contiene telemetría, analítica ni backend.
+---
 
-- La partida activa, confesiones, conversaciones y expediente viven en `sessionStorage`.
-- Preferencias y logros derivados viven en `localStorage`.
-- Los archivos solo se procesan después de que el usuario los selecciona. Se usan nombres, tipos, tamaños y fechas, no su contenido.
-- Las imágenes voluntarias se reducen localmente a datos de paleta. La imagen original no se guarda en el estado.
-- Todo puede borrarse desde la interfaz.
-- El modo incógnito ofrece la experiencia completa sin entregar información personal.
+## Privacidad y Seguridad
 
-La casa puede fingir omnisciencia como personaje. El software no espía.
+La aplicación está diseñada bajo el principio de soberanía de datos del jugador:
 
-## Desarrollo
+- **Sin backend:** El juego corre enteramente en tu navegador. Ningún dato sale a un servidor externo.
+- **Sin telemetría ni analítica:** No registramos tus clics, hábitos ni comportamiento.
+- **Sin credenciales ni llamadas externas:** Las conversaciones e interrogatorios son locales y procedimentales, sin depender de servicios de terceros ni APIs generativas comerciales.
+- ** session & local Storage:** La partida activa, tus respuestas a la Declaración Jurada, los diálogos del chat y el expediente viven exclusivamente en `sessionStorage` (se destruyen al cerrar la pestaña). Las preferencias visuales, logros obtenidos y rituales descubiertos se guardan en `localStorage` (persisten localmente).
+- **Control absoluto:** Puedes limpiar todas tus preferencias y logros directamente desde el menú del juego en cualquier momento.
+- **Modo Incógnito:** Puedes usar la opción de expediente apócrifo para jugar de forma anónima sin proveer ninguna información.
 
-```bash
-npm ci
-npm run dev
-```
+> [!NOTE]
+> La casa puede fingir omnisciencia como personaje. El software no espía.
 
-Validación principal:
+---
 
-```bash
-npm run check
-```
+## Desarrollo Local
 
-Comandos individuales:
+Requisitos: Node.js 22+.
 
-```bash
-npm run typecheck
-npm run lint
-npm run test
-npm run build
-npm run test:e2e
-```
+1. Instalar dependencias:
+   ```bash
+   npm ci
+   ```
+2. Iniciar servidor de desarrollo local:
+   ```bash
+   npm run dev
+   ```
+3. Ejecutar suite de pruebas y compilación completa:
+   ```bash
+   npm run check
+   ```
 
-La salida estática se genera en `dist/`.
+Comandos de test individuales:
+- `npm run typecheck` (validación estática de TypeScript)
+- `npm run lint` (linter de código)
+- `npm run test` (pruebas unitarias con Vitest)
+- `npm run build` (compilación a producción en `dist/`)
+- `npm run test:e2e` (pruebas de humo y capturas con Playwright)
 
-## GitHub Pages
-
-El repositorio incluye `.github/workflows/deploy-pages.yml`. El workflow instala dependencias con `npm ci`, ejecuta las verificaciones, construye `dist/` y publica mediante las acciones oficiales de GitHub Pages.
-
-La configuración de Vite usa rutas relativas, por lo que la aplicación puede alojarse como Project Page dentro de una subcarpeta.
+---
 
 ## Arquitectura
 
@@ -108,29 +143,31 @@ src/
     ├── generators/         lotes, roasts y texto procedural
     ├── persistence/        sesión, preferencias y logros
     ├── state/              máquina de estados y reducer
-    └── tests/              pruebas unitarias y simulaciones
+    └── tests/              pruebas unitarias y simulaciones de campañas
 ```
 
-El motor procedural puede ejecutarse sin React, lo que permite probar campañas, lotes, presagios, contratos, rivales y anomalías de forma determinista. La versión 1.1.0 incluye 47 pruebas unitarias y simulaciones de campañas completas, campañas infinitas y rituales secretos.
-
-## Legado
-
-La versión original de Python y Streamlit permanece en `legacy/streamlit/`. No se necesita para jugar la versión web.
-
-## Estado de validación
-
-La validación reproducible y sus limitaciones están documentadas en:
-
-- [`docs/final-validation.md`](docs/final-validation.md)
-- [`docs/acceptance-audit.md`](docs/acceptance-audit.md)
-- [`docs/obra-febril.md`](docs/obra-febril.md)
-
-## Licencia
-
-MIT. Los retratos incluidos forman parte del proyecto y fueron optimizados para distribución web.
+El motor procedural es independiente del framework visual (React), permitiendo ejecutar campañas y simulaciones de rituales directamente desde la CLI. La versión 1.1.0 contiene 47 pruebas unitarias con simulación completa de campañas breves, infinitas e interacciones de rituales.
 
 ---
 
-### English
+## GitHub Pages
 
-A browser-only procedural auction roguelite about cursed property, predatory debt, hostile bureaucracy and objects that may eventually acquire their buyer. It runs locally with React and TypeScript, requires no generative-AI service, and includes a configurable narrative dossier that can remain entirely fictional.
+El despliegue en GitHub Pages está configurado a través del workflow oficial [.github/workflows/deploy-pages.yml](.github/workflows/deploy-pages.yml). Utiliza la configuración portátil de Vite (`base: './'`), lo que permite alojar la aplicación de forma compatible con subrutas de proyecto.
+
+---
+
+## Legado Streamlit
+
+El prototipo original del juego desarrollado en Python y Streamlit está disponible en la carpeta [legacy/streamlit/](legacy/streamlit/). No es necesario para disfrutar de la experiencia moderna en React.
+
+---
+
+## Licencia
+
+MIT. Los assets gráficos y retratos incluidos forman parte del proyecto y están optimizados para distribución web estática bajo licencia abierta.
+
+---
+
+### English Summary
+
+A browser-only procedural auction roguelite about cursed property, predatory debt, hostile bureaucracy and objects that may eventually acquire their buyer. It runs locally with React and TypeScript, requires no generative-AI service, and includes a configurable narrative dossier that can remain entirely fictional. Play online on [GitHub Pages](https://kegouro.github.io/remates-del-caos/).
