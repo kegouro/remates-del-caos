@@ -1,0 +1,22 @@
+◈ Remates del Caos - Manual de Instrucciones ◈
+
+Este es un juego de comedia absurda donde pujas por objetos inutiles contra la maquina, rodeado de espectadores pixel art y musica de de sintetizador.
+
+◈ REQUISITOS ◈
+Tener instalado Python 3 en tu computadora.
+- Descarga para Windows/macOS: https://www.python.org/
+- En Windows, asegurate de marcar la casilla "Add Python to PATH" durante la instalacion.
+
+◈ INSTRUCCIONES DE INICIO ◈
+
+En macOS o Linux:
+1. Haz doble clic en el archivo "run.command".
+2. La consola instalara las librerias automaticamente la primera vez y abrira el navegador.
+
+En Windows:
+1. Haz doble clic en el archivo "run.bat".
+2. El script configurara tu entorno e iniciara la aplicacion en el navegador.
+
+◈ NOTA SOBRE LA API KEY ◈
+El juego tiene un catalogo local infinito de items absurdos y voces, por lo que puedes jugar sin internet.
+Si tienes una clave de API de Google Gemini (GEMINI_API_KEY) y quieres activar el "Lote de Elite" dinamico y la conversacion inteligente con los personajes, puedes ingresarla en el panel de control lateral una vez abierto el juego.
