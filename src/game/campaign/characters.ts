@@ -265,14 +265,191 @@ export function isSecretUnlocked(state: GameState, id: CharacterId): boolean {
 }
 
 export function getCharacterLocalReply(id: CharacterId, input: string, rng: () => number): string {
-  const profile = CORE_CHARACTERS[id];
   const clean = input.replace(/[<>]/g, '').replace(/\s+/g, ' ').trim().slice(0, 90) || 'esa declaración vacía';
-  const templates = [
-    `${profile.name} examina “${clean}” y concluye que ${profile.roastLens.toLowerCase()} acaba de recibir nueva evidencia.`,
-    `${profile.name}: “Interesante. Has conseguido que ‘${clean}’ parezca simultáneamente confesión, excusa y bien depreciable.”`,
-    `${profile.name} archiva tu frase bajo ${profile.desire.toLowerCase()}. “Volveremos a esto cuando duela más.”`,
-    `${profile.name}: “${clean}”. Qué forma tan eficiente de redactar tu propia letra pequeña.`,
-    `${profile.name} guarda silencio, que en su dialecto significa que acaba de encontrar un uso rentable para “${clean}”.`
-  ];
-  return templates[Math.floor(rng() * templates.length)];
+  
+  // Normalización del input para búsqueda de palabras clave
+  const normalized = clean
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+
+  // Mapa de palabras clave y sus respuestas específicas por personaje
+  const keywords: Record<string, string[]> = {
+    dinero: ['dinero', 'plata', 'presupuesto', 'pobre', 'riqueza', 'pagar', 'precio', 'comprar', 'pesos', 'oro', 'monedas', 'liquidez'],
+    deuda: ['deuda', 'prestamo', 'interes', 'debo', 'sanguino', 'banco', 'credito', 'pagare', 'cobro'],
+    secreto: ['secreto', 'mentira', 'ocultar', 'verdad', 'confesar', 'confesion', 'engano'],
+    rata: ['rata', 'roquefort', 'queso', 'migas', 'roedor'],
+    muerte: ['muerte', 'morir', 'fantasma', 'coiman', 'espectro', 'difunto', 'fallecido', 'tumba'],
+    jefe: ['jefe', 'trabajo', 'empleo', 'salario', 'explotar', 'sueldo', 'oficina'],
+    tiempo: ['tiempo', 'hora', 'tarde', 'reloj', 'esperar', 'segundos', 'minutos', 'plazo'],
+    alma: ['alma', 'espiritu', 'garantia', 'inmaterial']
+  };
+
+  // Respuestas temáticas según el personaje y la palabra clave detectada
+  const npcReplies: Partial<Record<CharacterId, Record<string, string>>> = {
+    subastador: {
+      dinero: `Don Belisario Martillazo: “¡Dinero! Esa vulgaridad transitoria que mide el valor de los hombres y el apetito del martillo. Si carece de él, subastaremos su compostura.”`,
+      deuda: `Don Belisario Martillazo: “Las deudas en este salón no son números, sino el peso del futuro cayendo sobre sus hombros. Procure que el martillazo no lo encuentre insolvente.”`,
+      secreto: `Don Belisario Martillazo: “¿Un secreto? ¡Magnífico! Las mentiras bien ornamentadas cotizan mucho mejor en la subasta que la vulgar y desnuda verdad.”`,
+      rata: `Don Belisario Martillazo: “Ah, el pequeño Alphonse. Cree que las migas del sumidero constituyen un imperio. Un roedor astuto, pero desprovisto de toda elegancia dramática.”`,
+      muerte: `Don Belisario Martillazo: “La muerte es el subastador supremo. Adjudica al peor postor y nunca concede prórrogas. Mientras tanto, conserve la compostura.”`,
+      jefe: `Don Belisario Martillazo: “El empleo es una fianza que uno paga diariamente con su tiempo. No espere simpatía de esta casa por sus desdichas laborales.”`,
+      tiempo: `Don Belisario Martillazo: “El tiempo transcurre como una cuenta regresiva: ¡a la una, a las dos, y adjudicado! No lo malgaste en lamentaciones.”`,
+      alma: `Don Belisario Martillazo: “¿Su alma? Un lote interesante, pero de tasación compleja. Requiere un marco dorado y un historial libre de embargos anteriores.”`
+    },
+    fantasma: {
+      dinero: `Casimiro Coimán: “El dinero es un trámite que vence mañana. Si necesitas desviar fondos o certificar un pago inexistente, susúrramelo... con un recargo.”`,
+      deuda: `Casimiro Coimán: “¿Deudas? Entre nosotros, el libro de actas de Don Sanguino tiene una página muy delgada. Un derrame de tinta oportuno cuesta poco.”`,
+      secreto: `Casimiro Coimán: “Los secretos son mi moneda de curso legal. Una mentira oportuna vale más que cualquier certificado de defunción. Cuéntame otra.”`,
+      rata: `Casimiro Coimán: “Sir Roquefort cree que controla el Banco de Migas, pero sus contables son espectros que responden a mis sellos. No te fíes de su monóculo.”`,
+      muerte: `Casimiro Coimán: “Estar muerto no es tan malo si sabes rellenar los formularios correctos. La burocracia del más allá es eterna, pero negociable.”`,
+      jefe: `Casimiro Coimán: “¿Tu jefe? El mío es Belisario, y lleva siglos ensayando discursos solemnes mientras yo me encargo de que los números cuadren.”`,
+      tiempo: `Casimiro Coimán: “La hora de salida es un concepto flexible en el subsuelo. Siempre hay tiempo para una firma apócrifa.”`,
+      alma: `Casimiro Coimán: “El alma es un activo inmaterial difícil de liquidar. Sanguino te la aceptará, pero yo prefiero algo que quepa en un sobre cerrado.”`
+    },
+    rata: {
+      dinero: `Sir Roquefort III: “El dinero es el único lenguaje racional. Su falta de liquidez demuestra una preocupante obsolescencia biológica. Depréciese en silencio.”`,
+      deuda: `Sir Roquefort III: “Las deudas son cadenas lógicas. En el Banco de Migas no prestamos a humanos sentimentales; su tasa de interés es el colapso inminente.”`,
+      secreto: `Sir Roquefort III: “Las mentiras humanas son tan predecibles como sus quiebras. Su secreto es un activo de valor cero en cualquier mercado formal.”`,
+      rata: `Sir Roquefort III: “¿Roquefort? Sir Roquefort para usted, plebeyo. Y no confunda mi linaje con plagas de alcantarilla; controlo el sumidero completo.”`,
+      muerte: `Sir Roquefort III: “La muerte es la amortización total de un recurso gastado. Incluso el fantasma de Coimán paga arriendo por ocupar espacio en mi inventario.”`,
+      jefe: `Sir Roquefort III: “El trabajo asalariado es un subsidio para la incompetencia. Si su salario es insuficiente, es porque su valor de mercado es insignificante.”`,
+      tiempo: `Sir Roquefort III: “El tiempo no es dinero; el tiempo es el interés compuesto que usted le debe a su propia decadencia. Dése prisa.”`,
+      alma: `Sir Roquefort III: “¿Garantía inmaterial? El alma cotiza a la baja. Prefiero activos reales, tangibles e inmunes a sus rezos de fin de semana.”`
+    },
+    sanguino: {
+      dinero: `Don Sanguino: “El dinero va y viene, criatura... Por eso prefiero los contratos permanentes. Una pequeña firma y tu liquidez dejará de ser una preocupación.”`,
+      deuda: `Don Sanguino: “No lo llames deuda, hijo; llámalo un futuro asegurado. Te presto hoy lo que perderás mañana, con una modesta comisión inmaterial.”`,
+      secreto: `Don Sanguino: “Puedes mentirle a Belisario o a la Fiscal, criatura, pero las mentiras no se descuentan del saldo. Al final, tu firma está en mi libro.”`,
+      rata: `Don Sanguino: “Alphonse es un caballero muy digno con su monóculo, sí... pero sus migas de queso también pagan intereses en mi ventanilla.”`,
+      muerte: `Don Sanguino: “La muerte no cancela los contratos perpetuos, hijo. Los herederos son una garantía excelente y los espectros siguen firmando con la misma letra.”`,
+      jefe: `Don Sanguino: “Un mal jefe es solo un cobrador impaciente. Ven conmigo, mis plazos son eternos y mi trato es mucho más paternal.”`,
+      tiempo: `Don Sanguino: “Tómate tu tiempo, criatura. Los segundos acumulados solo significan un futuro más maduro para ser cobrado.”`,
+      alma: `Don Sanguino: “La garantía inmaterial es mi favorita. Cabe en una boleta, no paga impuestos de timbre y siempre vuelve a su dueño original... es decir, a mí.”`
+    },
+    fiscal: {
+      dinero: `Fiscal Serafina Timbre: “Toda transacción en efectivo sin timbre oficial es nula. Su flujo de caja está siendo registrado bajo el anexo fiscal.”`,
+      deuda: `Fiscal Serafina Timbre: “La deuda acumulada sin amortización comprobada constituye desacato del anexo siete. Presente sus descargos inmediatos.”`,
+      secreto: `Fiscal Serafina Timbre: “Ocultar antecedentes en un documento firmado bajo juramento conlleva la incautación del expediente y del declarante.”`,
+      rata: `Fiscal Serafina Timbre: “El roedor Alphonse carece de personería jurídica reglamentaria. Sus migas bancarias serán fiscalizadas el próximo lunes.”`,
+      muerte: `Fiscal Serafina Timbre: “El cese de funciones vitales no anula la causa fiscal. El expediente de auditoría continuará a través de su sucesión.”`,
+      jefe: `Fiscal Serafina Timbre: “Toda relación de dependencia laboral debe ser registrada por triplicado. Las quejas verbales no constituyen prueba formal.”`,
+      tiempo: `Fiscal Serafina Timbre: “El plazo reglamentario venció oficialmente. Cualquier alegato o excusa fuera de término queda archivado sin revisión.”`,
+      alma: `Fiscal Serafina Timbre: “Las garantías inmateriales carecen de respaldo catastral. El alma no figura como bien embargable en el estatuto principal.”`
+    },
+    cobradora: {
+      dinero: `La Cobradora de las 4:17: “El dinero es solo la medida exacta de su tardanza. Prepare el pago antes de que mis zapatos dejen de sonar.”`,
+      deuda: `La Cobradora de las 4:17: “Su saldo insolvente ya figura en la planilla de ejecución diaria. No aceptamos prórrogas firmadas mañana.”`,
+      secreto: `La Cobradora de las 4:17: “Toda mentira u ocultación es simplemente un interés que se acumula para la hora del vencimiento final.”`,
+      rata: `La Cobradora de las 4:17: “El roedor del Banco de Migas conoce mis plazos. Nadie en el sumidero está exento de la hora de cobro.”`,
+      muerte: `La Cobradora de las 4:17: “La muerte es una cita que tengo agendada con usted a las 4:17. No se preocupe, seré sumamente puntual.”`,
+      jefe: `La Cobradora de las 4:17: “Su empleador actual no podrá cubrir el saldo adeudado. Las obligaciones del subsuelo son de carácter personalísimo.”`,
+      tiempo: `La Cobradora de las 4:17: “El tiempo es el interés moratorio que usted le debe a su propia decadencia. Su plazo expira exactamente ahora.”`,
+      alma: `La Cobradora de las 4:17: “Su alma ya fue registrada como garantía de primer grado en la orden del día. Procederemos a su ejecución.”`
+    }
+  };
+
+  // Buscar palabra clave en el input
+  for (const [key, list] of Object.entries(keywords)) {
+    if (list.some(keyword => normalized.includes(keyword))) {
+      // Intentar obtener respuesta específica para este NPC y palabra clave
+      if (npcReplies[id] && npcReplies[id][key]) {
+        return npcReplies[id][key];
+      }
+      // Respuestas de respaldo para otros personajes usando la palabra clave
+      if (id === 'viuda') {
+        if (key === 'dinero') return `La Viuda del Retail: “¡Dinero! Úsalo para comprar en la gran liquidación de saldos del acto actual antes de que expire.”`;
+        if (key === 'deuda') return `La Viuda del Retail: “¿Deudas? Se pagan en doce cuotas fijas con la tarjeta del Salón. La muerte es gratis, el interés no.”`;
+      }
+      if (id === 'notario') {
+        if (key === 'dinero') return `El Notario Sin Rostro: “El pago de bienes debe certificarse en papel sellado. Sin el timbre de fe, sus billetes son celulosa.”`;
+        if (key === 'deuda') return `El Notario Sin Rostro: “La deuda consta en copia autorizada y certificada. No intente negar su rúbrica; la tinta no olvida.”`;
+      }
+      if (id === 'garantia') {
+        if (key === 'deuda' || key === 'dinero') return `Padre Garantía: “Toda deuda económica encuentra su salvación mediante una extensión de cobertura. Bendito sea el pago a plazo.”`;
+        if (key === 'alma') return `Padre Garantía: “El alma no tiene devolución después de los primeros treinta días corridos. Lea la letra pequeña.”`;
+      }
+      if (id === 'balance') {
+        if (key === 'secreto') return `Madame Balance: “Los secretos desequilibran el balance de vidas anteriores. Confiese todo para cuadrar las columnas.”`;
+        if (key === 'tiempo') return `Madame Balance: “El tiempo es una cifra que gira sobre sí misma. Su retraso ya estaba contabilizado en el activo.”`;
+      }
+    }
+  }
+
+  // Fallbacks temáticos altamente personalizados por NPC en lugar de la misma plantilla para todos
+  const fallbacks: Record<CharacterId, string[]> = {
+    subastador: [
+      `Don Belisario Martillazo: “Interesante declaración sobre ‘${clean}’. Pero en este salón, las palabras se pesan en oro y se cortan con martillo.”`,
+      `Don Belisario Martillazo examina su postura: “Conque ‘${clean}’... Una confesión pintoresca, aunque carece del dramatismo que exijo de mis deudores.”`,
+      `Don Belisario Martillazo: “Archivaré ‘${clean}’ en el anexo de disculpas no homologadas. Prosiga con su puja, el tiempo corre.”`
+    ],
+    fantasma: [
+      `Casimiro Coimán: “¿‘${clean}’? Entre nosotros, he visto expedientes peores archivados en el pozo de cenizas. Todo tiene un precio.”`,
+      `Casimiro Coimán susurra: “Anotado. Aunque si quieres borrar el registro de ‘${clean}’, la tarifa estándar son cincuenta pesos. Tú decides.”`,
+      `Casimiro Coimán guiña un ojo: “Eso de ‘${clean}’ suena bastante comprometedor. El jefe pagaría bien por saberlo.”`
+    ],
+    rata: [
+      `Sir Roquefort III: “¿‘${clean}’? Un pensamiento de valor marginal, típico de un espécimen con exceso de sentimentalismo y escasez de presupuesto.”`,
+      `Sir Roquefort III tasa sus palabras: “Insignificante. Poner en palabras ‘${clean}’ no aumentará su precio de liquidación en el Banco de Migas.”`,
+      `Sir Roquefort III: “He oído disculpas de mejor factura de parte de mis contables. Concéntrese en mantener sus números en verde.”`
+    ],
+    sanguino: [
+      `Don Sanguino: “Ay, hijo... Hablar de ‘${clean}’ es un consuelo pasajero. Pero los consuelos no pagan el arriendo de tus mañanas.”`,
+      `Don Sanguino sonríe: “Entiendo perfectamente lo de ‘${clean}’. No te preocupes, pondré esa inquietud como garantía en el próximo préstamo.”`,
+      `Don Sanguino: “Eso que dices es muy tierno, criatura. Firma aquí y dejemos que el tiempo haga su trabajo.”`
+    ],
+    fiscal: [
+      `Fiscal Serafina Timbre: “Su mención de ‘${clean}’ carece de firmas autorizadas y ha sido archivada provisionalmente en la bandeja de desestimados.”`,
+      `Fiscal Serafina Timbre: “Exijo que ‘${clean}’ sea presentado por triplicado ante la inspectora de bienes improbables.”`
+    ],
+    engrudo: [
+      `Maese Engrudo: “Eso de ‘${clean}’ se puede arreglar fácilmente con dos capas de barniz y un poco de cola de carpintero de procedencia dudosa.”`,
+      `Maese Engrudo: “He reparado cómodas con grietas más profundas que ‘${clean}’. La restauración comenzará de inmediato.”`
+    ],
+    balance: [
+      `Madame Balance: “Las cifras de ‘${clean}’ no cuadran en la columna del debe. Deberá justificar ese vacío antes del cierre de actas.”`,
+      `Madame Balance: “La auditoría de vidas pasadas reveals que ‘${clean}’ es una constante repetida en sus anteriores bancarrotas.”`
+    ],
+    viuda: [
+      `La Viuda del Retail: “Eso de ‘${clean}’ no tiene descuento aplicable. Vuelve cuando encuentres un artículo con etiqueta roja.”`,
+      `La Viuda del Retail: “¿‘${clean}’? Prefiero comprar lotes cerrados sin abrir; la sorpresa siempre cotiza más alto.”`
+    ],
+    notario: [
+      `El Notario Sin Rostro: “Se toma razón de ‘${clean}’, procediendo a su incorporación en el protocolo de bienes embargados del folio doce.”`,
+      `El Notario Sin Rostro: “La validez de su declaración queda sujeta al pago del impuesto de timbre correspondiente.”`
+    ],
+    nino: [
+      `Niño Índice: “La probabilidad de que ‘${clean}’ afecte el índice de precios del salón es de un tres por ciento. Un margen despreciable.”`,
+      `Niño Índice: “Su tendencia respecto a ‘${clean}’ va a la baja. Recomiendo liquidar su inventario antes de la próxima etapa.”`
+    ],
+    filomena: [
+      `Doña Filomena Liquidez: “¡Qué importa ‘${clean}’! Prefiero apostar todo al lote actual y ver si Sir Roquefort se atreve a superar mi oferta.”`,
+      `Doña Filomena Liquidez: “¡Jajaja! Eso de ‘${clean}’ suena divertidísimo, pero mi paciencia es corta y mi presupuesto es infinito.”`
+    ],
+    cardenas: [
+      `Contador Cárdenas: “Considerar ‘${clean}’ a estas alturas es caer en la falacia del costo hundido. Ya hemos invertido demasiado en esta pérdida.”`,
+      `Contador Cárdenas: “Mis registros indican que ‘${clean}’ aumentará el déficit operativo en un veinte por ciento. Debemos insistir.”`
+    ],
+    ujier: [
+      `El Ujier de Ceniza: “Esa puerta marcada como ‘${clean}’ lleva años clausurada tras el incendio. Le sugiero buscar otra salida.”`,
+      `El Ujier de Ceniza: “Los visitantes que hablan de ‘${clean}’ suelen quedarse atrapados en el pasillo de los archivadores mudos.”`
+    ],
+    infanta: [
+      `La Infanta del Recargo: “Añadiremos una pequeña comisión de servicio sobre ‘${clean}’. Es por gastos de representación de mi corona.”`,
+      `La Infanta del Recargo: “Qué declaración tan adorable. Conlleva un recargo del quince por ciento por procesamiento burocrático.”`
+    ],
+    garantia: [
+      `Padre Garantía: “Su declaración sobre ‘${clean}’ no cuenta con cobertura contra desgaste ordinario. Deberá encomendarse a la fe del plazo extendido.”`,
+      `Padre Garantía: “Bendigo su declaración, aunque las exclusiones de la póliza cubren el noventa por ciento de sus pecados.”`
+    ],
+    cobradora: [
+      `La Cobradora de las 4:17: “Su declaración sobre ‘${clean}’ ha sido registrada. La hora de vencimiento sigue fijada irrevocablemente.”`,
+      `La Cobradora de las 4:17: “Eso de ‘${clean}’ no detendrá mis pasos. La planilla de obligaciones debe ser saldada hoy.”`
+    ]
+  };
+
+  // Obtener array de fallbacks del personaje
+  const list = fallbacks[id] || fallbacks.subastador;
+  const choice = list[Math.floor(rng() * list.length)];
+  return choice;
 }
